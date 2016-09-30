@@ -810,12 +810,7 @@ function TL_Schema($scope) {
         add: "Ajouter Technique de maitre",
         style: {
           add: "btn-success"
-        },
-      },
-      {
-        type: "submit",
-        style: "btn-info",
-        title: "Enregistrer"
+        }
       }
     ];
   }
