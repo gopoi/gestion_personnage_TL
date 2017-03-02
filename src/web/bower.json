@@ -24,6 +24,8 @@
     "sockjs": "0.3.4",
     "angular-schema-form-dynamic-select": "master",
     "ngPrint": "master",
-    "angular-qrcode": "master"
+    "components-font-awesome": "master",
+    "angular-qrcode": "master",
+    "jsSHA": "master"
   }
 }
