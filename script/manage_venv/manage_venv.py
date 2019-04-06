@@ -4,31 +4,33 @@ import os
 import venv
 
 
-# Create a venv
 class VenvCreator(venv.EnvBuilder):
-
-    def __init__(self, env_dir: str, scripts_dir: str, bare_scripts_dir: bool = True, *args, **kwargs):
-        self.env_dir = env_dir
-        self.scripts_dir = scripts_dir
+    '''Creates a virtual environment,installing scripts with proper #!'''
+    def __init__(self, env_dir, scripts_dir, bare_scripts_dir=True, *args,
+                 **kwargs):
+        self.env_dir = os.path.abspath(env_dir)
+        self.scripts_dir = os.path.abspath(scripts_dir)
         self.bare_scripts_dir = bare_scripts_dir
 
         with_pip = kwargs.pop('with_pip', True)
         super().__init__(with_pip=with_pip, *args, **kwargs)
         self.context = self.ensure_directories(self.env_dir)
 
-    def install_scripts(self, *args, **kwargs):
+    def create(self):
+        super().create(self.env_dir)
 
-        super().install_scripts(*args, **kwargs)
-        
-    def create_venv(self):
-        self.create(self.env_dir)
-        if self.bare_scripts_dir and os.name == 'posix':
-            os.symlink(self.env_dir, 'posix')
+        if self.bare_scripts_dir:
+            try:
+                os.symlink(self.scripts_dir, os.path.join(os.path.dirname('.'),
+                                                          'common'))
+                # installing scripts
+                self.install_scripts(self.context, '.')
+            except FileExistsError:
+                print('symlink for bare scripts directory already present')
         else:
-            pass  # TODO
+            self.install(self.context, self.scripts_dir)
 
 
-if  __name__ == '__main__':
-    v=VenvCreator('tesset', 'posix', bare_scripts_dir=False)
-    v.create_venv()
-    v.install_scripts(v.context, '.')
+if __name__ == '__main__':
+    v = VenvCreator('tesset', 'posix', bare_scripts_dir=True)
+    v.create()
